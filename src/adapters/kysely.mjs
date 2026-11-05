@@ -1,7 +1,9 @@
 import { Kysely, PostgresDialect, sql } from 'kysely';
 import pg from 'pg';
-import { cols, Rollback, swallowRollback } from '../shared.mjs';
+import { Rollback, swallowRollback } from '../shared.mjs';
 
+// Kysely compila a query e chama pool.query(text, values) do pg, sem nome de statement.
+// Nao ha opcao para prepared statements nomeados; PREPARED nao tem efeito aqui.
 export async function create({ url, pool }) {
   const db = new Kysely({
     dialect: new PostgresDialect({

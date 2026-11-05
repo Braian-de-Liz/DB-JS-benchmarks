@@ -5,28 +5,31 @@
   "scripts": {
     "prisma:generate": "prisma generate",
     "seed": "node src/seed.mjs",
-    "bench:bun:all": "bun test tests/*-bun.test.ts",
-    "bench:node:all": "node --expose-gc ./node_modules/vitest/vitest.mjs run",
-    "bench:pg-node": "node --expose-gc ./node_modules/vitest/vitest.mjs run tests/bench-pg-node.test.ts",
+    "bench:bun:all": "bun test bun.test",
+    "bench:node:all": "node --expose-gc --experimental-strip-types --test --test-concurrency=1 tests/*-node.test.ts",
+    "bench:pg-node": "node --expose-gc --experimental-strip-types --test --test-concurrency=1 tests/bench-pg-node.test.ts",
     "bench:pg-bun": "bun test tests/bench-pg-bun.test.ts",
-    "bench:postgresjs-node": "node --expose-gc ./node_modules/vitest/vitest.mjs run tests/bench-postgresjs-node.test.ts",
+    "bench:postgresjs-node": "node --expose-gc --experimental-strip-types --test --test-concurrency=1 tests/bench-postgresjs-node.test.ts",
     "bench:postgresjs-bun": "bun test tests/bench-postgresjs-bun.test.ts",
     "bench:bunsql-bun": "bun test tests/bench-bunsql-bun.test.ts",
-    "bench:drizzle-pg-node": "node --expose-gc ./node_modules/vitest/vitest.mjs run tests/bench-drizzle-pg-node.test.ts",
+    "bench:drizzle-pg-node": "node --expose-gc --experimental-strip-types --test --test-concurrency=1 tests/bench-drizzle-pg-node.test.ts",
     "bench:drizzle-pg-bun": "bun test tests/bench-drizzle-pg-bun.test.ts",
-    "bench:drizzle-postgresjs-node": "node --expose-gc ./node_modules/vitest/vitest.mjs run tests/bench-drizzle-postgresjs-node.test.ts",
+    "bench:drizzle-postgresjs-node": "node --expose-gc --experimental-strip-types --test --test-concurrency=1 tests/bench-drizzle-postgresjs-node.test.ts",
     "bench:drizzle-postgresjs-bun": "bun test tests/bench-drizzle-postgresjs-bun.test.ts",
     "bench:drizzle-bunsql-bun": "bun test tests/bench-drizzle-bunsql-bun.test.ts",
-    "bench:prisma-node": "node --expose-gc ./node_modules/vitest/vitest.mjs run tests/bench-prisma-node.test.ts",
+    "bench:prisma-node": "node --expose-gc --experimental-strip-types --test --test-concurrency=1 tests/bench-prisma-node.test.ts",
     "bench:prisma-bun": "bun test tests/bench-prisma-bun.test.ts",
-    "bench:typeorm-node": "node --expose-gc ./node_modules/vitest/vitest.mjs run tests/bench-typeorm-node.test.ts",
+    "bench:typeorm-node": "node --expose-gc --experimental-strip-types --test --test-concurrency=1 tests/bench-typeorm-node.test.ts",
     "bench:typeorm-bun": "bun test tests/bench-typeorm-bun.test.ts",
-    "bench:sequelize-node": "node --expose-gc ./node_modules/vitest/vitest.mjs run tests/bench-sequelize-node.test.ts",
+    "bench:sequelize-node": "node --expose-gc --experimental-strip-types --test --test-concurrency=1 tests/bench-sequelize-node.test.ts",
     "bench:sequelize-bun": "bun test tests/bench-sequelize-bun.test.ts",
-    "bench:kysely-node": "node --expose-gc ./node_modules/vitest/vitest.mjs run tests/bench-kysely-node.test.ts",
+    "bench:kysely-node": "node --expose-gc --experimental-strip-types --test --test-concurrency=1 tests/bench-kysely-node.test.ts",
     "bench:kysely-bun": "bun test tests/bench-kysely-bun.test.ts",
-    "bench:knex-node": "node --expose-gc ./node_modules/vitest/vitest.mjs run tests/bench-knex-node.test.ts",
+    "bench:knex-node": "node --expose-gc --experimental-strip-types --test --test-concurrency=1 tests/bench-knex-node.test.ts",
     "bench:knex-bun": "bun test tests/bench-knex-bun.test.ts"
+  },
+  "engines": {
+    "node": ">=22.6.0"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.0.0",
@@ -40,7 +43,6 @@
     "typeorm": "^0.3.20"
   },
   "devDependencies": {
-    "prisma": "^7.0.0",
-    "vitest": "^4.1.8"
+    "prisma": "^7.0.0"
   }
 }

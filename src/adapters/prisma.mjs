@@ -1,9 +1,11 @@
 import pg from 'pg';
 import { PrismaPg } from '@prisma/adapter-pg';
+// O client gerado e TypeScript (ver prisma/schema.prisma). No Node precisa de --experimental-strip-types (>= 22.6).
 import { PrismaClient } from '../generated/prisma/client.ts';
 import { Rollback, swallowRollback } from '../shared.mjs';
 
 export async function create({ url, pool }) {
+  // @prisma/adapter-pg usa o padrao do driver pg (sem prepared statements nomeados); PREPARED nao tem efeito aqui.
   const adapter = new PrismaPg(new pg.Pool({ connectionString: url, max: pool }));
   const prisma = new PrismaClient({ adapter });
 

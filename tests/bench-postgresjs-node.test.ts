@@ -1,19 +1,20 @@
-import { describe, test, expect, beforeAll, afterAll } from "vitest";
+import { describe, test, before, after } from "node:test";
+import assert from "node:assert/strict";
 import { createSuite, SCENARIO_NAMES, ITER } from "./helpers/suite.mjs";
 
 const suite = createSuite("postgresjs-node");
 
 describe("postgresjs-node", () => {
-  beforeAll(() => suite.open(), 600_000);
-  afterAll(() => suite.close(), 600_000);
+  before(() => suite.open(), { timeout: 600_000 });
+  after(() => suite.close(), { timeout: 600_000 });
 
   for (const name of SCENARIO_NAMES) {
-    test(name, async () => {
+    test(name, { timeout: 1_800_000 }, async () => {
       const r = await suite.run(name);
       for (const s of Object.values(r)) {
-        expect(s.n).toBe(ITER);
-        expect(s.opsPerSec).toBeGreaterThan(0);
+        assert.equal(s.n, ITER);
+        assert.ok(s.opsPerSec > 0);
       }
-    }, 1_800_000);
+    });
   }
 });

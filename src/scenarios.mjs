@@ -27,6 +27,9 @@ const stats = (arr, wallS) => {
   const pct = (p) => arr[Math.min(arr.length - 1, Math.ceil(p * arr.length) - 1)];
   return {
     n: arr.length,
+    // Iteracoes dessa operacao divididas pelo tempo total do cenario. No crud cada iteracao executa
+    // insert, update, byId e delete uma vez, entao as quatro operacoes tem o mesmo opsPerSec.
+    // Para a latencia de cada operacao, use mean/p50/p95/p99.
     opsPerSec: arr.length / wallS,
     mean: arr.reduce((a, b) => a + b, 0) / arr.length,
     p50: pct(0.5),

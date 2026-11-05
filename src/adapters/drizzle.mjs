@@ -24,34 +24,45 @@ export async function create({ driver, url, prepared, pool }) {
     close = () => c.close();
   }
 
+  // postgres.js e Bun.SQL recebem `prepare` acima. O node-postgres so usa statement nomeado quando a
+  // query do drizzle chama .prepare(nome), entao com PREPARED ativo nomeamos cada query.
+  const P = (name, q) => (prepared && driver === 'pg' ? q.prepare(name).execute() : q);
+
   return {
-    byId: (id) => db.select().from(users).where(eq(users.id, id)),
+    byId: (id) => P('byId', db.select().from(users).where(eq(users.id, id))),
     insert: async (n, e, s) =>
-      (await db.insert(users).values({ name: n, email: e, score: s }).returning({ id: users.id }))[0].id,
-    update: (id, s) => db.update(users).set({ score: s }).where(eq(users.id, id)),
-    remove: (id) => db.delete(users).where(eq(users.id, id)),
+      (await P('insert', db.insert(users).values({ name: n, email: e, score: s }).returning({ id: users.id })))[0].id,
+    update: (id, s) => P('update', db.update(users).set({ score: s }).where(eq(users.id, id))),
+    remove: (id) => P('delete', db.delete(users).where(eq(users.id, id))),
     filter: (min, off) =>
-      db
-        .select({ id: users.id, name: users.name, score: users.score })
-        .from(users)
-        .where(gte(users.score, min))
-        .orderBy(asc(users.id))
-        .limit(20)
-        .offset(off),
+      P(
+        'filter',
+        db
+          .select({ id: users.id, name: users.name, score: users.score })
+          .from(users)
+          .where(gte(users.score, min))
+          .orderBy(asc(users.id))
+          .limit(20)
+          .offset(off),
+      ),
     join: (start) =>
-      db
-        .select({ id: users.id, name: users.name, amount: orders.amount })
-        .from(users)
-        .innerJoin(orders, eq(orders.userId, users.id))
-        .where(between(users.id, start, start + 49)),
-    agg: (st) => db.select({ c: count(), s: sum(orders.amount) }).from(orders).where(eq(orders.status, st)),
-    bulk: (rows) => db.insert(users).values(rows),
+      P(
+        'join',
+        db
+          .select({ id: users.id, name: users.name, amount: orders.amount })
+          .from(users)
+          .innerJoin(orders, eq(orders.userId, users.id))
+          .where(between(users.id, start, start + 49)),
+      ),
+    agg: (st) =>
+      P('agg', db.select({ c: count(), s: sum(orders.amount) }).from(orders).where(eq(orders.status, st))),
+    bulk: (rows) => P('bulk', db.insert(users).values(rows)),
     txRollback: (id) =>
       db
         .transaction(async (tx) => {
-          await tx.update(users).set({ score: sqlTag`${users.score} + 1` }).where(eq(users.id, id));
-          await tx.insert(orders).values({ userId: id, amount: 1, status: 'open' });
-          await tx.select({ c: count() }).from(orders).where(eq(orders.userId, id));
+          await P('tx_upd', tx.update(users).set({ score: sqlTag`${users.score} + 1` }).where(eq(users.id, id)));
+          await P('tx_ins', tx.insert(orders).values({ userId: id, amount: 1, status: 'open' }));
+          await P('tx_cnt', tx.select({ c: count() }).from(orders).where(eq(orders.userId, id)));
           throw new Rollback();
         })
         .catch(swallowRollback),

@@ -32,6 +32,9 @@ export async function create({ url, pool }) {
 
   await seq.authenticate();
 
+  // Todos os modos de leitura hidratam instancias de modelo (sem raw: true), que e o uso tipico do ORM.
+  // Sequelize com dialect postgres nao expoe prepared statements nomeados; PREPARED nao tem efeito aqui.
+
   return {
     byId: (id) => User.findByPk(id, { attributes: ['id', 'name', 'email', 'score'] }),
     insert: async (n, e, s) => (await User.create({ name: n, email: e, score: s })).id,
@@ -44,7 +47,6 @@ export async function create({ url, pool }) {
         limit: 20,
         offset: off,
         attributes: ['id', 'name', 'score'],
-        raw: true,
       }),
     join: (start) =>
       User.findAll({
@@ -58,7 +60,6 @@ export async function create({ url, pool }) {
           [fn('COUNT', col('id')), 'c'],
           [fn('SUM', col('amount')), 's'],
         ],
-        raw: true,
       }),
     bulk: (rows) => User.bulkCreate(rows),
     txRollback: (id) =>

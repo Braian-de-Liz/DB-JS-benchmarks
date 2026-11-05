@@ -28,6 +28,8 @@ const Order = new EntitySchema({
   },
 });
 
+// O driver postgres do TypeORM nao expoe nome de statement; usa o padrao do pg (sem prepared nomeado).
+// PREPARED nao tem efeito aqui.
 export async function create({ url, pool }) {
   const ds = new DataSource({
     type: 'postgres',

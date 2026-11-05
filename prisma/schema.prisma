@@ -1,6 +1,10 @@
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
+  // Emite .ts com imports explicitos em .ts, carregaveis por Node (--experimental-strip-types) e Bun.
+  moduleFormat          = "esm"
+  importFileExtension   = "ts"
+  generatedFileExtension = "ts"
 }
 
 datasource db {

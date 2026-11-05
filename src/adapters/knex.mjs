@@ -1,6 +1,8 @@
 import knex from 'knex';
 import { Rollback, swallowRollback } from '../shared.mjs';
 
+// O client pg do Knex nao expoe nome de statement; usa o padrao do pg (sem prepared nomeado).
+// PREPARED nao tem efeito aqui.
 export async function create({ url, pool }) {
   const k = knex({
     client: 'pg',
